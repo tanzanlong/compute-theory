@@ -7,4 +7,18 @@ strace -o output.txt -T -tt -e trace=all -p 28979 跟踪28979进程的所有系�
  netstat -n | awk '/^tcp/ {++S[$NF]} END {for(a in S) print a, S[a]}' 查看tcp
  
  
+ ##tcpdump
+ 只捕获TCP SYN包：
+ # tcpdump -i <interface> "tcp[tcpflags] & (tcp-syn) != 0" 
+只捕获TCP ACK包：
+
+# tcpdump -i <interface> "tcp[tcpflags] & (tcp-ack) != 0"
+只捕获TCP FIN包：
+
+# tcpdump -i <interface> "tcp[tcpflags] & (tcp-fin) != 0"
+之捕获TCP SYN或ACK包：
+
+ # tcpdump -r <interface> "tcp[tcpflags] & (tcp-syn|tcp-ack) != 0" 
+ 
+ 
  http://blog.chinaunix.net/uid-24118190-id-3946086.html
