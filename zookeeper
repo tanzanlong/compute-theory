@@ -1,0 +1,42 @@
+Apache Zookeeper是什么
+Zookeeper是一个集中式的服务，包括管理配置信息，命名服务，提供分布式的同步,以及提供分组服务等。所有这些类型的服务都在分布式应用中以不同形式在使用。
+每次去实现这些服务的时候,都有非常多的工作需要做，比如修复bug， 解决竞争冲突等不可避免的问题。
+由于实现这一系列服务的复杂性和难度较大，而我们应用开发一开始略过了这些，等到后期可维护性及扩展性很差。甚至当我们已经正确的实现了这些服务的时候，由于底层实现的不同，会导致对应用部署灵活性不够，管理复杂。
+Zab协议
+Zab是一个原子广播协议。其中多个进程的系统中的所有正确进程都以相同的顺序接收相同的一组消息; 即消息的相同序列。[1] [2]广播被称为“ 原子 ”，因为它最终可以在所有参与者中正确完成，或者所有参与者中止而没有副作用。原子广播是一个重要的分布式计算原语。
+Zab是一个基于leader的类paxos协议。区别zab和paxos协议的一些方法是：
+1.zab奔溃恢复历史而不是单一实例协议。
+2.zab用先序性来保证了同一时刻原始/备份可以同时执行多个操作。
+3.Zab在领导层变更时会进行特殊处理，以确保领导者提出的值的唯一序号。
+
+客户端和服务器端之间初次握手结构：
+class LearnerInfo {
+    int protocolVersion;
+    int serverid;
+}
+
+Follower和leader之间的proposals 通过如下结构：
+class QuorumPacket {
+    int type; // Request, Ack, Commit, Ping, etc
+    long zxid;
+    buffer data;
+    vector<org.apache.zookeeper.data.Id> authinfo; // only used for requests
+}
+
+假设：
+1.使用尽力而为的领导者选举算法，从算法服务器中选出具有最新历史记录的领导者。
+2.观察员或追随者一次只能连接到一个领导。
+3.服务器必须按照收到的顺序处理数据包。由于TCP在发送数据包时保持排序，这意味着数据包将按照发送者定义的顺序进行处理。
+领导选举
+所有服务器开始寻找领导者。一旦给定服务器上的领导者选举实例表明领导者已经出现，它将移动到阶段1.如果领导者选举实例指示服务器是领导者，则其作为领导者移动到阶段1，否则移动到阶段1作为追随者。
+阶段1
+
+
+
+
+
+
+https://en.wikipedia.org/wiki/Atomic_broadcast
+https://cwiki.apache.org/confluence/display/ZOOKEEPER/Zab1.0
+https://blog.csdn.net/zhang_shuai_2011/article/details/38080485
+
